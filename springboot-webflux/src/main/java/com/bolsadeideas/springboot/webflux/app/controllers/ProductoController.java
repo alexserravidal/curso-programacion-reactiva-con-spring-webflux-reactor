@@ -8,31 +8,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 
-import com.bolsadeideas.springboot.webflux.app.models.dao.ProductoDao;
 import com.bolsadeideas.springboot.webflux.app.models.documents.Producto;
+import com.bolsadeideas.springboot.webflux.app.services.ProductoService;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Controller
 public class ProductoController {
 	
-	private static final Logger log = LoggerFactory.getLogger(ProductoController.class);
-	
 	@Autowired
-	private ProductoDao dao;
+	ProductoService productoService;
+	
+	private static final Logger log = LoggerFactory.getLogger(ProductoController.class);
 	
 	/* Va a estar linkado al endpoint "list" y root ("") */
 	@GetMapping({"/list", "/"})
 	public String list(Model model) {
 		
-		Flux<Producto> list = dao
-				.findAll()
-				.map(producto -> {
-					producto.setNombre(producto.getNombre().toUpperCase());
-					return producto;
-				});
+		Flux<Producto> list = productoService.findAll();
 		
 		list.subscribe(prod -> {
 			log.info(prod.getNombre());
@@ -45,15 +42,24 @@ public class ProductoController {
 		return "listar";
 	}
 	
+	@GetMapping("/form")
+	public Mono<String> showCreateForm(Model model) {
+		model.addAttribute("producto", new Producto());
+		model.addAttribute("titulo", "Formulario de producto");
+		return Mono.just("form");
+	}
+	
+	@PostMapping("/form")
+	public Mono<String> saveCreateForm(Producto producto) {
+		return productoService.save(producto)
+				.doOnNext(p -> log.info("Producto guardado: " + p.getId() + " - " + p.getNombre()))
+				.thenReturn("redirect:/list");
+	}
+	
 	@GetMapping({"/list-datadriver"})
 	public String listDataDriver(Model model) {
 		
-		Flux<Producto> list = dao
-				.findAll()
-				.map(producto -> {
-					producto.setNombre(producto.getNombre().toUpperCase());
-					return producto;
-				})
+		Flux<Producto> list = productoService.findAll()
 				.delayElements(Duration.ofSeconds(1));
 		
 		list.subscribe(prod -> {
@@ -77,12 +83,7 @@ public class ProductoController {
 	@GetMapping({"/list-chunked"})
 	public String listChunked(Model model) {
 		
-		Flux<Producto> list = dao
-				.findAll()
-				.map(producto -> {
-					producto.setNombre(producto.getNombre().toUpperCase());
-					return producto;
-				})
+		Flux<Producto> list = productoService.findAll()
 				.repeat(5000);
 
 		model.addAttribute("productos", list);
@@ -98,12 +99,7 @@ public class ProductoController {
 	@GetMapping({"/list-chunked-specific"})
 	public String listChunkedSpecific(Model model) {
 		
-		Flux<Producto> list = dao
-				.findAll()
-				.map(producto -> {
-					producto.setNombre(producto.getNombre().toUpperCase());
-					return producto;
-				})
+		Flux<Producto> list = productoService.findAll()
 				.repeat(5000);
 
 		model.addAttribute("productos", list);
