@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 
 import com.bolsadeideas.springboot.webflux.app.models.documents.Producto;
@@ -17,6 +20,7 @@ import com.bolsadeideas.springboot.webflux.app.services.ProductoService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@SessionAttributes("producto")
 @Controller
 public class ProductoController {
 	
@@ -44,16 +48,39 @@ public class ProductoController {
 	
 	@GetMapping("/form")
 	public Mono<String> showCreateForm(Model model) {
+		
+		/* Si usamos @SessionAttributes("producto")
+		 * El atributo "producto" se guardará en sesión a partir de aquí
+		 * Porque es el primer momento donde se usa este atributo
+		 * De este modo, al guardarlo en el formulario de editar, mantendrá su ID
+		 * y se editará en vez de crearse clonado sin necesidad de tener añadido
+		 * El input hidden en la template
+		 */
 		model.addAttribute("producto", new Producto());
 		model.addAttribute("titulo", "Formulario de producto");
 		return Mono.just("form");
 	}
 	
 	@PostMapping("/form")
-	public Mono<String> saveCreateForm(Producto producto) {
+	public Mono<String> saveCreateForm(Producto producto, SessionStatus status) {
+		status.setComplete();
 		return productoService.save(producto)
 				.doOnNext(p -> log.info("Producto guardado: " + p.getId() + " - " + p.getNombre()))
 				.thenReturn("redirect:/list");
+	}
+	
+	@GetMapping("/form/{id}")
+	public Mono<String> showProductForm(@PathVariable String id, Model model) {
+		Mono<Producto> monoProducto = productoService.findById(id)
+			.defaultIfEmpty(new Producto())
+			.doOnNext(p -> {
+				log.info("Producto: " + p.getNombre());
+			});
+		
+		model.addAttribute("titulo", "Editar Producto");
+		model.addAttribute("producto", monoProducto);
+		
+		return Mono.just("form");
 	}
 	
 	@GetMapping({"/list-datadriver"})

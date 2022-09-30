@@ -32,14 +32,13 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	public Mono<Producto> findById(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return dao.findById(id);
+		
 	}
 
 	@Override
 	public Mono<Producto> save(Producto producto) {
-		
-		producto.setCreateAt(new Date());
 		return dao.save(producto);
 	}
 
