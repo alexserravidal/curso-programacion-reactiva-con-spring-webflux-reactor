@@ -66,7 +66,7 @@ public class ProductoController {
 		status.setComplete();
 		return productoService.save(producto)
 				.doOnNext(p -> log.info("Producto guardado: " + p.getId() + " - " + p.getNombre()))
-				.thenReturn("redirect:/list");
+				.thenReturn("redirect:/list?success=producto+guardado+correctamente");
 	}
 	
 	@GetMapping("/form/{id}")
@@ -81,6 +81,35 @@ public class ProductoController {
 		model.addAttribute("producto", monoProducto);
 		
 		return Mono.just("form");
+	}
+	
+	/* 
+	 * Igual que /form/{id} pero todo gestionado en un mismo flujo
+	 * PROS: Permite manejar errores en el flujo, como la redirección que añadimos en el .onErrorResume
+	 * CONTRAS: Pasamos el model en el doOnNext y por lo tanto no es el mismo thread que la función, por
+	 * lo tanto el SessionAttributes deja de funcionar --> Necesitamos volver a usar el input hiden en el HTML
+	 * */
+	@GetMapping("/form-v2/{id}")
+	public Mono<String> showProductFormV2(@PathVariable String id, Model model) {
+		
+		return productoService.findById(id)
+				.defaultIfEmpty(new Producto())
+				.flatMap(producto -> {
+					if (producto.getId() == null) {
+						return Mono.error(new InterruptedException("No existe el producto"));
+					}
+					
+					return Mono.just(producto);
+				})
+				.doOnNext(producto -> {
+					log.info("Producto: " + producto.getNombre());
+					model.addAttribute("titulo", "Editar Producto");
+					model.addAttribute("producto", producto);
+					
+				})
+				.then(Mono.just("form-v2"))
+				.onErrorResume(ex -> Mono.just("redirect:/list?error=no+existe+el+producto"));			
+		
 	}
 	
 	@GetMapping({"/list-datadriver"})
