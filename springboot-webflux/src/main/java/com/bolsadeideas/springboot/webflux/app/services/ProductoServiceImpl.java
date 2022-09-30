@@ -44,8 +44,7 @@ public class ProductoServiceImpl implements ProductoService {
 
 	@Override
 	public Mono<Void> delete(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.deleteById(id);
 	}
 
 }

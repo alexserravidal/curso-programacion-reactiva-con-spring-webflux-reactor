@@ -20,6 +20,7 @@
 				<th>Precio</th>
 				<th>Fecha</th>
 				<th></th>
+				<th></th>
 			</tr>
 		</thead>
 		
@@ -29,7 +30,16 @@
 				<td th:text="${producto.nombre}"></td>
 				<td th:text="${producto.precio}"></td>
 				<td th:text="${producto.createAt}"></td>
-				<td><a th:href="@{/form-v2/} + ${producto.id}">Editar</a></td>
+				<td>
+					<a th:href="@{/form/} + ${producto.id}">
+						<input type="button" value="Editar">
+					</a>
+				</td>
+				<td>
+					<form th:action="@{/eliminar/{productoId}(productoId=${producto.id})}" method="delete">
+						<div><input type="submit" value="Borrar"></div>
+					</form>
+				</td>
 			</tr>
 		</tbody>
 	</table>

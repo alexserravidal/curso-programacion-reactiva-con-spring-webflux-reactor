@@ -1,12 +1,16 @@
 package com.bolsadeideas.springboot.webflux.app.controllers;
 
 import java.time.Duration;
+import java.util.Date;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -62,7 +66,20 @@ public class ProductoController {
 	}
 	
 	@PostMapping("/form")
-	public Mono<String> saveCreateForm(Producto producto, SessionStatus status) {
+	/* @Valid para validar los @NotNull y @NotEmpty que hemos añadido a la clase Producto 
+	 * El parámetro BindingResult ha de ir seguido al objeto que estamos validando (Producto).
+	 * Es decir, no podría estar como tercer argumento (Producto, SessionStatus, BindingResult)*/
+	public Mono<String> saveCreateForm(@Valid Producto producto, BindingResult result, Model model, SessionStatus status) {
+		
+		if (result.hasErrors()) {
+			model.addAttribute("titulo", "Errores en formulario producto");
+			return Mono.just("form");
+		}
+		
+		if (producto.getCreateAt() == null) {
+			producto.setCreateAt(new Date());
+		}
+		
 		status.setComplete();
 		return productoService.save(producto)
 				.doOnNext(p -> log.info("Producto guardado: " + p.getId() + " - " + p.getNombre()))
@@ -81,6 +98,22 @@ public class ProductoController {
 		model.addAttribute("producto", monoProducto);
 		
 		return Mono.just("form");
+	}
+	
+	@GetMapping("/eliminar/{id}")
+	public Mono<String> eliminar(@PathVariable String id) {
+		return productoService.findById(id)
+			.defaultIfEmpty(new Producto())
+			.flatMap(producto -> {
+				if (producto.getId() == null) return Mono.error(new InterruptedException("No existe el producto"));
+				return Mono.just(producto);
+			})
+			.flatMap(producto -> {
+				log.info("Eliminando producto: " + producto.toString());
+				return productoService.delete(id);
+			})
+			.then(Mono.just("redirect:/list?success=producto+eliminado"))
+			.onErrorResume(ex -> Mono.just("redirect:/list?error=producto+no+existe"));
 	}
 	
 	/* 
