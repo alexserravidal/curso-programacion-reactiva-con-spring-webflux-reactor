@@ -12,12 +12,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
 
+import com.bolsadeideas.springboot.webflux.app.models.documents.Categoria;
 import com.bolsadeideas.springboot.webflux.app.models.documents.Producto;
 import com.bolsadeideas.springboot.webflux.app.services.ProductoService;
 
@@ -32,6 +34,12 @@ public class ProductoController {
 	ProductoService productoService;
 	
 	private static final Logger log = LoggerFactory.getLogger(ProductoController.class);
+	
+	@ModelAttribute("categorias")
+	/* Sirve para obtener el listado de categorias en el each del selector del form.html */
+	public Flux<Categoria> categorias() {
+		return productoService.findAllCategorias();
+	}
 	
 	/* Va a estar linkado al endpoint "list" y root ("") */
 	@GetMapping({"/list", "/"})
@@ -76,14 +84,19 @@ public class ProductoController {
 			return Mono.just("form");
 		}
 		
-		if (producto.getCreateAt() == null) {
-			producto.setCreateAt(new Date());
-		}
-		
 		status.setComplete();
-		return productoService.save(producto)
-				.doOnNext(p -> log.info("Producto guardado: " + p.getId() + " - " + p.getNombre()))
-				.thenReturn("redirect:/list?success=producto+guardado+correctamente");
+		
+		Mono<Categoria> categoria = productoService.findCategoriaById(producto.getCategoria().getId());
+		
+		return categoria.flatMap(c -> {
+			producto.setCategoria(c);
+			if (producto.getCreateAt() == null) {
+				producto.setCreateAt(new Date());
+			}
+			return productoService.save(producto);
+		})
+		.doOnNext(p -> log.info("Producto guardado: " + p.toString()))
+		.thenReturn("redirect:/list?success=producto+guardado+correctamente");
 	}
 	
 	@GetMapping("/form/{id}")
