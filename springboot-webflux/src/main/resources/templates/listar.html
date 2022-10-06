@@ -33,12 +33,17 @@
 				<td th:text="${producto.createAt}"></td>
 				<td th:text="${producto.categoria.nombre}"></td>
 				<td>
+					<a th:href="@{/ver/} + ${producto.id}">
+						<input type="button" value="Ver">
+					</a>
+				</td>
+				<td>
 					<a th:href="@{/form/} + ${producto.id}">
 						<input type="button" value="Editar">
 					</a>
 				</td>
 				<td>
-					<form th:action="@{/eliminar/{productoId}(productoId=${producto.id})}" method="delete">
+					<form th:action="@{/{productoId}(productoId=${producto.id})}" method="delete">
 						<div><input type="submit" value="Borrar"></div>
 					</form>
 				</td>

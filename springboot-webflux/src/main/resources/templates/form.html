@@ -12,7 +12,7 @@
 	
 	<div>
 		<!-- action="producto" corresponde al atributo "producto" del modelo en el ProductoController -->
-		<form th:action="@{/form}" method="post" th:object="${producto}">
+		<form th:action="@{/form}" method="post" th:object="${producto}" enctype="multipart/form-data">
 		
 			<!--  	
 			Si no se añade el input hidden, la ID del producto no se manda en la operación POST y 
@@ -48,6 +48,11 @@
 					</select>
 					<small th:if="${#fields.hasErrors('categoria.id')}" th:errors="*{categoria.id}"></small>
 				</div>
+			</div>
+			
+			<div>
+				<label for="file">Foto</label>
+				<div><input type="file" name="file"></div>
 			</div>
 			
 			<div>

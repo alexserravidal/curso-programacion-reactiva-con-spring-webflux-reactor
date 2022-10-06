@@ -1,20 +1,26 @@
 package com.bolsadeideas.springboot.webflux.app.controllers;
 
+import java.io.File;
 import java.time.Duration;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.thymeleaf.spring5.context.webflux.ReactiveDataDriverContextVariable;
@@ -29,6 +35,9 @@ import reactor.core.publisher.Mono;
 @SessionAttributes("producto")
 @Controller
 public class ProductoController {
+	
+	@Value("${config.uploads.path}")
+	private String UPLOADS_PATH;
 	
 	@Autowired
 	ProductoService productoService;
@@ -77,7 +86,7 @@ public class ProductoController {
 	/* @Valid para validar los @NotNull y @NotEmpty que hemos añadido a la clase Producto 
 	 * El parámetro BindingResult ha de ir seguido al objeto que estamos validando (Producto).
 	 * Es decir, no podría estar como tercer argumento (Producto, SessionStatus, BindingResult)*/
-	public Mono<String> saveCreateForm(@Valid Producto producto, BindingResult result, Model model, SessionStatus status) {
+	public Mono<String> saveCreateForm(@Valid Producto producto, BindingResult result, Model model, @RequestPart(name="file") FilePart foto, SessionStatus status) {
 		
 		if (result.hasErrors()) {
 			model.addAttribute("titulo", "Errores en formulario producto");
@@ -88,14 +97,30 @@ public class ProductoController {
 		
 		Mono<Categoria> categoria = productoService.findCategoriaById(producto.getCategoria().getId());
 		
-		return categoria.flatMap(c -> {
+		return categoria
+		.flatMap(c -> {
+			
 			producto.setCategoria(c);
+			
 			if (producto.getCreateAt() == null) {
 				producto.setCreateAt(new Date());
 			}
+			
+			if (!foto.filename().isEmpty()) {
+				String fileName = UUID.randomUUID().toString() + "-" + foto.filename();
+				fileName = fileName.replace(" ", "").replace(":", "").replace("\\", "");
+				producto.setFoto(fileName);
+			}
+			
 			return productoService.save(producto);
 		})
 		.doOnNext(p -> log.info("Producto guardado: " + p.toString()))
+		.flatMap(p -> {
+			if (!foto.filename().isEmpty()) {
+				return foto.transferTo(new File(UPLOADS_PATH + p.getFoto()));
+			}
+			return Mono.empty();
+		})
 		.thenReturn("redirect:/list?success=producto+guardado+correctamente");
 	}
 	
@@ -113,7 +138,25 @@ public class ProductoController {
 		return Mono.just("form");
 	}
 	
-	@GetMapping("/eliminar/{id}")
+	@GetMapping("ver/{id}")
+	public Mono<String> showProductDetail(Model model, @PathVariable String id) {
+		
+		return productoService.findById(id).doOnNext(p -> {
+			model.addAttribute("producto", p);
+			model.addAttribute("titulo", "Detalle Producto");
+		})
+		.defaultIfEmpty(new Producto())
+		.flatMap(producto -> {
+			if (producto.getId() == null) return Mono.error(new InterruptedException("No existe el producto"));
+			return Mono.just(producto);
+		})
+		.then(Mono.just("ver"))
+		.onErrorResume(ex -> Mono.just("redirect:/list?error=producto+no+existe"));
+		
+		
+	}
+	
+	@DeleteMapping("/{id}")
 	public Mono<String> eliminar(@PathVariable String id) {
 		return productoService.findById(id)
 			.defaultIfEmpty(new Producto())
