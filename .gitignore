@@ -54,3 +54,4 @@ atlassian-ide-plugin.xml
 
 # CUSTOM PROYECTO
 /springboot-webflux/uploads/*.jpg
+/springboot-webflux-apirest/uploads/*.jpg

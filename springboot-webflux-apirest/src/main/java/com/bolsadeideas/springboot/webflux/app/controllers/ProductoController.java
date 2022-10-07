@@ -1,12 +1,16 @@
 package com.bolsadeideas.springboot.webflux.app.controllers;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Date;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bolsadeideas.springboot.webflux.app.models.documents.Producto;
@@ -28,6 +33,10 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/api/productos")
 public class ProductoController {
+	
+	@Value("${config.uploads.path}")
+	private String UPLOADS_PATH;
+	
 	
 	@Autowired
 	private ProductoService productoService;
@@ -108,6 +117,20 @@ public class ProductoController {
 			return productoService.delete(productToDelete.getId()).thenReturn(new ResponseEntity<Void>(HttpStatus.NO_CONTENT));
 		})
 		.defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+	}
+	
+	@PostMapping("/{id}/photo")
+	public Mono<ResponseEntity<Producto>> uploadPhoto(@PathVariable String id, @RequestPart FilePart photo) {
+		
+		return productoService.findById(id).flatMap(productToUpdate -> {
+			productToUpdate.setFoto(UUID.randomUUID().toString() + "-" + photo.filename().trim());
+			
+			return photo.transferTo(new File(UPLOADS_PATH + productToUpdate.getFoto())).then(productoService.save(productToUpdate));
+		})
+		.map(updatedProduct -> {
+			return ResponseEntity.ok(updatedProduct);
+		})
+		.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 	
 	
