@@ -3,7 +3,11 @@ package com.bolsadeideas.springboot.webflux.app.controllers;
 import java.io.File;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.support.WebExchangeBindException;
 
 import com.bolsadeideas.springboot.webflux.app.models.documents.Producto;
 import com.bolsadeideas.springboot.webflux.app.services.ProductoService;
@@ -77,6 +82,58 @@ public class ProductoController {
 	}
 	
 	@PostMapping
+	public Mono<ResponseEntity<Map<String, Object>>> crear(@Valid @RequestBody Mono<Producto> producto) {
+		
+		Map<String, Object> respuesta = new HashMap<String, Object>();
+		
+		return producto.flatMap(productToCreate -> {
+			
+			if (productToCreate.getCreateAt() == null) productToCreate.setCreateAt(new Date());
+			
+			return productoService.save(productToCreate).map(createdProduct -> {
+				
+				respuesta.put("producto", createdProduct);
+				
+				return ResponseEntity
+						.created(URI.create("/api/productos".concat(createdProduct.getId())))
+						.body(respuesta);
+			});
+			
+		}).onErrorResume(t -> {
+			return Mono.just(t).cast(WebExchangeBindException.class)
+					/* 1. 	Hacemos el cast y conseguimos leer los errores propios de la excepcion "getFieldErrors()" 
+					 * 		Hay que pasar el listado de errores a Mono para poder continuar con el stream
+					 * */
+					.flatMap(e -> Mono.just(e.getFieldErrors()))
+					
+					/* 2. 	Pasamos Mono<List<Errores>> a un Flux<Errores> para poderlos mapear uno por uno
+					 * */
+					.flatMapMany(errors -> Flux.fromIterable(errors))
+					
+					/* 3.	Mapeamos el error tal y como se mostrará en la response (devolvemos un String por cada Error)
+					 * 		Resultando en un Flux<String>
+					 * */
+					.map(fieldError -> "El campo " + fieldError.getField() + " " + fieldError.getDefaultMessage())
+					
+					/* 4.	Convertimos de nuevo Flux<String> a Mono<List<String>> para poder poner el listado entero 
+					 * 		en la response
+					 */
+					.collectList()
+					.flatMap(errorsList -> {
+						respuesta.put("errors", errorsList);
+						return Mono.just(ResponseEntity.badRequest().body(respuesta));
+					});
+		});
+		
+		
+	}
+	/*
+	 * Old: Endpoint con el RequestBody sin ser un stream (no es Mono<Producto>
+	 * Esto funciona pero cuando se asignan validaciones (@Valid), se pasa a recibir
+	 * como Mono porque así podemos pasar los errores de validacion por el stream
+	 */
+	
+	/*
 	public Mono<ResponseEntity<Producto>> crear(@RequestBody Producto producto) {
 		
 		if (producto.getCreateAt() == null) producto.setCreateAt(new Date());
@@ -86,6 +143,23 @@ public class ProductoController {
 					.created(URI.create("/api/productos".concat(p.getId())))
 					.body(p);
 		});
+		
+	}
+	*/
+	
+	@PostMapping("/v2")
+	public Mono<ResponseEntity<Producto>> crearConFoto(Producto producto, @RequestPart FilePart photo) {
+		
+		if (producto.getCreateAt() == null) producto.setCreateAt(new Date());
+		
+		producto.setFoto(UUID.randomUUID().toString() + "-" + photo.filename().trim());
+		
+		return photo.transferTo(new File(UPLOADS_PATH + producto.getFoto())).then(productoService.save(producto))
+				.map(createdProduct -> {
+					return ResponseEntity.created(URI.create("/api/productos".concat(createdProduct.getId())))
+							.contentType(MediaType.APPLICATION_JSON)
+							.body(createdProduct);
+				});
 		
 	}
 	
