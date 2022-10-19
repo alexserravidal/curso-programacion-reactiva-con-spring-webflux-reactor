@@ -31,12 +31,20 @@ public class RouterFunctionConfiguration {
 				handler::crear
 			)
 			.andRoute(
+				RequestPredicates.POST("/api/functional/productos/v2"),
+				handler::createAndUpload
+			)
+			.andRoute(
 				RequestPredicates.PUT("/api/functional/productos/{id}"),
 				handler::editar
 			)
 			.andRoute(
 				RequestPredicates.DELETE("/api/functional/productos/{id}"),
 				handler::eliminar
+			)
+			.andRoute(
+				RequestPredicates.POST("/api/functional/productos/{id}/photo"),
+				handler::upload
 			);
 			
 	}
