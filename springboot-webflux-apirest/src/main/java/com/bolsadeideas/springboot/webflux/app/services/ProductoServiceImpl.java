@@ -40,6 +40,12 @@ public class ProductoServiceImpl implements ProductoService {
 		return dao.findById(id);
 		
 	}
+	
+	@Override
+	public Mono<Producto> findByNombre(String nombre) {
+		
+		return dao.findByNombre(nombre);
+	}
 
 	@Override
 	public Mono<Producto> save(Producto producto) {
