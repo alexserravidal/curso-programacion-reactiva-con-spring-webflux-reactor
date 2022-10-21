@@ -152,6 +152,52 @@ class SpringbootWebfluxApirestApplicationTests {
 		
 	}
 	
+	@Test
+	void productUpdateTest() {
+		
+		Producto initialProduct = productoService.findByNombre("Sony Notebook").block();
+		Categoria categoria = productoService.findCategoriaByNombre("Electrónico").block();
+		
+		Producto updatedProduct = new Producto("Asus Notebook", 700.0, categoria);
+		
+		client.put()
+			.uri("api/functional/productos/{id}", Collections.singletonMap("id", initialProduct.getId()))
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+			.body(Mono.just(updatedProduct), Producto.class)
+			.exchange()
+			.expectStatus().isCreated()
+			.expectBody(Producto.class)
+			.consumeWith(rs -> {
+				Producto p = rs.getResponseBody();
+				
+				Assertions.assertThat(p.getId()).isEqualTo(initialProduct.getId());
+				Assertions.assertThat(p.getNombre()).isEqualTo("Asus Notebook");
+				Assertions.assertThat(p.getPrecio()).isEqualTo(700.);
+				Assertions.assertThat(p.getCategoria().getNombre()).isEqualTo(categoria.getNombre());
+			});
+		
+	}
+	
+	@Test
+	void productDeleteTest() {
+		
+		Producto productToDelete = productoService.findByNombre("Apple iPod").block();
+		
+		client.delete()
+			.uri("api/functional/productos/{id}", Collections.singletonMap("id", productToDelete.getId()))
+			.exchange()
+			.expectStatus().isNoContent()
+			.expectBody()
+			.isEmpty();
+		
+		client.get()
+			.uri("api/functional/productos/{id}", Collections.singletonMap("id", productToDelete.getId()))
+			.exchange()
+			.expectStatus().isNotFound();
+		
+	}
+	
 	/* This test fails */
 	/*
 	@Test
