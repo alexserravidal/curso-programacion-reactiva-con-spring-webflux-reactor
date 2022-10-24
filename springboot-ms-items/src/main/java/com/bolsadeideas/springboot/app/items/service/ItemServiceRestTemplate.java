@@ -14,7 +14,7 @@ import com.bolsadeideas.springboot.app.items.dto.Item;
 import com.bolsadeideas.springboot.app.items.dto.Product;
 
 @Service
-public class ItemServiceImpl implements IItemService {
+public class ItemServiceRestTemplate implements IItemService {
 	
 	@Autowired
 	RestTemplate restTemplate;
