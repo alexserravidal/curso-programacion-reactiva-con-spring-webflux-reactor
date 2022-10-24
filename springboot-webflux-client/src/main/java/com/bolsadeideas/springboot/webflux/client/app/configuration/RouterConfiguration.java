@@ -20,6 +20,7 @@ public class RouterConfiguration {
 				.andRoute(RequestPredicates.POST("/api/client/productos"), handler::create)
 				.andRoute(RequestPredicates.PUT("/api/client/productos/{id}"), handler::update)
 				.andRoute(RequestPredicates.DELETE("/api/client/productos/{id}"), handler::delete)
+				.andRoute(RequestPredicates.POST("/api/client/productos/{id}/photo"), handler::uploadPhoto)
 				;
 	}
 

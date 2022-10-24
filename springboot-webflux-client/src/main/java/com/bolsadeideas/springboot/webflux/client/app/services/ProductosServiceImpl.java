@@ -7,7 +7,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -86,6 +89,23 @@ public class ProductosServiceImpl implements ProductosService {
 				.uri("/{id}", urlParams)
 				.exchangeToMono(response -> response.bodyToMono(Void.class))
 				.then();
+	}
+
+	@Override
+	public Mono<Producto> uploadPhoto(FilePart file, String id) {
+		
+		MultipartBodyBuilder multipartBodyBuilder = new MultipartBodyBuilder();
+		multipartBodyBuilder.asyncPart("photo", file.content(), DataBuffer.class).headers(h -> {
+			h.setContentDispositionFormData("photo", file.filename());
+		});
+
+		return webClient.post()
+				.uri("/{id}/photo", id)
+				.contentType(MediaType.MULTIPART_FORM_DATA)
+				.bodyValue(multipartBodyBuilder.build())
+				.retrieve()
+				.bodyToMono(Producto.class);
+		
 	}
 
 }
