@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.bolsadeideas.springboot.app.items.dto.Product;
 
 
-@FeignClient(name = "ms-products", url = "localhost:8001/api/products")
+@FeignClient(name = "ms-products", path = "/api/products")
 public interface ProductClientRest {
 	
 	@GetMapping("/")
