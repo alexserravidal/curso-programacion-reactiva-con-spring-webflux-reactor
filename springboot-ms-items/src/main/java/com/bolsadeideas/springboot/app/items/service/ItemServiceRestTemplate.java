@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.bolsadeideas.springboot.app.items.dto.Item;
 import com.bolsadeideas.springboot.app.items.dto.Product;
 
-@Service
+@Service("ItemServiceRestTemplate")
 public class ItemServiceRestTemplate implements IItemService {
 	
 	@Autowired
@@ -22,10 +22,10 @@ public class ItemServiceRestTemplate implements IItemService {
 	@Override
 	public List<Item> findAll() {
 		
-		Product[] productsArray = restTemplate.getForObject("http://localhost:8001/api/products/", Product[].class);
+		Product[] productsArray = restTemplate.getForObject("http://ms-products/api/products/", Product[].class);
 		
 		return Arrays.asList(productsArray).stream().map(product -> {
-			return new Item(product, 1);
+			return new Item(product, 1, ItemServiceRestTemplate.class.getName());
 		}).collect(Collectors.toList());
 		
 	}
@@ -36,9 +36,9 @@ public class ItemServiceRestTemplate implements IItemService {
 		Map<String, String> pathVariables = new HashMap<String, String>();
 		pathVariables.put("id", id.toString());
 
-		Product product = restTemplate.getForObject("http://localhost:8001/api/products/{id}", Product.class, pathVariables);
+		Product product = restTemplate.getForObject("http://ms-products/api/products/{id}", Product.class, pathVariables);
 		
-		return new Item(product, amount);
+		return new Item(product, amount, ItemServiceRestTemplate.class.getName());
 	}
 
 }

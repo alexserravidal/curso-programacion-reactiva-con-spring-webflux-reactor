@@ -16,5 +16,7 @@ public class Item {
 	public Double getTotalPrice() {
 		return product.getPrice() * amount;
 	}
+	
+	private String itemServiceSpecificationClassName;
 
 }

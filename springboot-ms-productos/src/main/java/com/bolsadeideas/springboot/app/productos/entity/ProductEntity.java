@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -36,6 +37,9 @@ public class ProductEntity implements Serializable {
 	 */
 	@Temporal(TemporalType.DATE)
 	private Date createdAt;
+	
+	@Transient
+	private Integer port;
 	
 	private static final long serialVersionUID = 1L;
 

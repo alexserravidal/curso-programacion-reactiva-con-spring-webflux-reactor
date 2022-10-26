@@ -10,7 +10,7 @@ import com.bolsadeideas.springboot.app.items.dto.Product;
 
 
 @FeignClient(name = "ms-products", path = "/api/products")
-public interface ProductClientRest {
+public interface ProductClientFeign {
 	
 	@GetMapping("/")
 	public List<Product> findAll();
