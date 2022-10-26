@@ -17,7 +17,7 @@ import com.bolsadeideas.springboot.app.items.service.IItemService;
 public class ItemController {
 	
 	@Autowired
-	@Qualifier("ItemServiceRestTemplate")
+	@Qualifier("ItemServiceFeign")
 	/*
 	 * Con el qualifier podemos comprobar que se puede aplicar el balanceo de carga en
 	 * 1. Clientes Feign (ver ItemServiceFeign y ProductClientFeign)
