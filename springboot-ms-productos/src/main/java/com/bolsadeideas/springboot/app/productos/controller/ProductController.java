@@ -26,9 +26,10 @@ public class ProductController {
 	@GetMapping("/{id}")
 	public ProductEntity findById(
 			@PathVariable Long id,
-			@RequestParam(required = false, defaultValue = "false") Boolean forceError
+			@RequestParam(required = false, defaultValue = "false") Boolean forceError,
+			@RequestParam(required = false, defaultValue = "0") Long forceTimeoutInMs
 			) {
-		return productService.findById(id, forceError);
+		return productService.findById(id, forceError, forceTimeoutInMs);
 	}
 	
 

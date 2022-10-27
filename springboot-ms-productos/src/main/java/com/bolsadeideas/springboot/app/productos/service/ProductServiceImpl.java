@@ -32,9 +32,18 @@ public class ProductServiceImpl implements IProductService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ProductEntity findById(Long id, Boolean forceError) {
+	public ProductEntity findById(Long id, Boolean forceError, Long forceTimeoutInMs) {
 		
 		if (forceError) throw new RuntimeException("Error forced by user @RequestParam forceError=true");
+		
+		if (forceTimeoutInMs > 0) {
+			try {
+				Thread.sleep(forceTimeoutInMs);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		
 		Optional<ProductEntity> optionalProductEntity = productDao.findById(id);
 		if (optionalProductEntity.isEmpty()) return null;
