@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.bolsadeideas.springboot.app.items.client.ProductClientFeign;
 import com.bolsadeideas.springboot.app.items.dto.Item;
 import com.bolsadeideas.springboot.app.items.dto.Product;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @Service("ItemServiceFeign")
 @Primary
@@ -28,28 +29,10 @@ public class ItemServiceFeign implements IItemService {
 	}
 
 	@Override
-	//@HystrixCommand(fallbackMethod="findByIdAndSetAmountFallbackMethod")
-	public Item findByIdAndSetAmount(Long id, Integer amount) {
+	public Item findByIdAndSetAmount(Long id, Integer amount, Boolean forceError) {
 		
-		Product product = productClientRest.findById(id);
+		Product product = productClientRest.findById(id, forceError);
 		return new Item(product, amount, ItemServiceFeign.class.getName());
 		
 	}
-	
-	public Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount) {
-		
-		Item item = new Item();
-		Product product = new Product();
-		
-		item.setAmount(amount);
-		product.setId(id);
-		product.setName("Fallback Product");
-		product.setPrice(0.);
-		product.setCreatedAt(new Date());
-		
-		item.setProduct(product);
-		return item;
-		
-	}
-
 }

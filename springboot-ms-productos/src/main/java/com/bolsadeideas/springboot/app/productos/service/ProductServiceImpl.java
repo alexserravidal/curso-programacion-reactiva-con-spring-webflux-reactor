@@ -32,7 +32,9 @@ public class ProductServiceImpl implements IProductService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ProductEntity findById(Long id) {
+	public ProductEntity findById(Long id, Boolean forceError) {
+		
+		if (forceError) throw new RuntimeException("Error forced by user @RequestParam forceError=true");
 		
 		Optional<ProductEntity> optionalProductEntity = productDao.findById(id);
 		if (optionalProductEntity.isEmpty()) return null;

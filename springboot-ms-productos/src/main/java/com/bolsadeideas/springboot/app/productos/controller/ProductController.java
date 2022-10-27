@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bolsadeideas.springboot.app.productos.entity.ProductEntity;
@@ -24,8 +25,11 @@ public class ProductController {
 	}
 	
 	@GetMapping("/{id}")
-	public ProductEntity findById(@PathVariable Long id) {
-		return productService.findById(id);
+	public ProductEntity findById(
+			@PathVariable Long id,
+			@RequestParam(required = false, defaultValue = "false") Boolean forceError
+			) {
+		return productService.findById(id, forceError);
 	}
 	
 

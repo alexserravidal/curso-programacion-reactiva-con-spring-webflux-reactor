@@ -8,6 +8,6 @@ import com.bolsadeideas.springboot.app.productos.entity.ProductEntity;
 public interface IProductService {
 	
 	public List<ProductEntity> findAll();
-	public ProductEntity findById(Long id);
+	public ProductEntity findById(Long id, Boolean forceError);
 
 }

@@ -15,7 +15,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 /*
  * Hystrix
  */
-//@EnableCircuitBreaker
+@EnableCircuitBreaker
 @EnableFeignClients
 @SpringBootApplication
 public class SpringbootMsItemsApplication {

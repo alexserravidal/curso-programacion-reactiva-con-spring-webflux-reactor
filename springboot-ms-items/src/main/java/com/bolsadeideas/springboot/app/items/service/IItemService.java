@@ -8,6 +8,6 @@ public interface IItemService {
 	
 	public List<Item> findAll();
 	
-	public Item findByIdAndSetAmount(Long id, Integer amount);
+	public Item findByIdAndSetAmount(Long id, Integer amount, Boolean forceError);
 
 }

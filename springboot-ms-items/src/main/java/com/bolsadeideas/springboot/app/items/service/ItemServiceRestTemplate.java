@@ -31,12 +31,13 @@ public class ItemServiceRestTemplate implements IItemService {
 	}
 
 	@Override
-	public Item findByIdAndSetAmount(Long id, Integer amount) {
+	public Item findByIdAndSetAmount(Long id, Integer amount, Boolean forceError) {
 		
 		Map<String, String> pathVariables = new HashMap<String, String>();
 		pathVariables.put("id", id.toString());
+		pathVariables.put("forceError", forceError.toString());
 
-		Product product = restTemplate.getForObject("http://ms-products/api/products/{id}", Product.class, pathVariables);
+		Product product = restTemplate.getForObject("http://ms-products/api/products/{id}?forceError={forceError}", Product.class, pathVariables);
 		
 		return new Item(product, amount, ItemServiceRestTemplate.class.getName());
 	}

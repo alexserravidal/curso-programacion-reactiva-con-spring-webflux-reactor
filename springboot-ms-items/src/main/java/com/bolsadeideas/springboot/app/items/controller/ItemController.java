@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bolsadeideas.springboot.app.items.dto.Item;
 import com.bolsadeideas.springboot.app.items.dto.Product;
 import com.bolsadeideas.springboot.app.items.service.IItemService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
 @RequestMapping("/api/items")
@@ -40,9 +42,30 @@ public class ItemController {
 	}
 	
 	@GetMapping("/{id}/amount/{amount}")
-	public Item findByIdAndSetAmount(@PathVariable Long id, @PathVariable Integer amount) {
+	@HystrixCommand(fallbackMethod = "findByIdAndSetAmountFallbackMethod")
+	public Item findByIdAndSetAmount(
+			@PathVariable Long id, 
+			@PathVariable Integer amount,
+			@RequestParam(required = false, defaultValue = "false") Boolean forceError
+			) {
 		
-		return itemService.findByIdAndSetAmount(id, amount);
+		return itemService.findByIdAndSetAmount(id, amount, forceError);
+	}
+	
+	public Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Boolean useFallbackMethod) {
+		
+		Item item = new Item();
+		Product product = new Product();
+		
+		item.setAmount(amount);
+		product.setId(id);
+		product.setName("Fallback Product");
+		product.setPrice(0.);
+		product.setCreatedAt(new Date());
+		
+		item.setProduct(product);
+		return item;
+		
 	}
 
 }
