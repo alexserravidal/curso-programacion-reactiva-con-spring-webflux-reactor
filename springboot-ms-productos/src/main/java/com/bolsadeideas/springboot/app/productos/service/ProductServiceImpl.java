@@ -17,10 +17,10 @@ import com.bolsadeideas.springboot.app.productos.entity.ProductEntity;
 public class ProductServiceImpl implements IProductService {
 	
 	@Autowired
-	ProductDao productDao;
+	private Environment environment;
 	
-	@Value("${server.port}")
-	private Integer serverPort;
+	@Autowired
+	ProductDao productDao;
 
 	@Override
 	@Transactional(readOnly = true)
@@ -40,19 +40,12 @@ public class ProductServiceImpl implements IProductService {
 		if (optionalProductEntity.isEmpty()) return null;
 		ProductEntity response = setProductPort(optionalProductEntity.get());
 		
-		try {
-			Thread.sleep(1000L);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
 		return response;
 	}
 	
 	private ProductEntity setProductPort(ProductEntity productEntity) {
 		
-		productEntity.setPort(serverPort);
+		productEntity.setPort(Integer.parseInt(environment.getProperty("local.server.port")));
 		return productEntity;
 	}
 

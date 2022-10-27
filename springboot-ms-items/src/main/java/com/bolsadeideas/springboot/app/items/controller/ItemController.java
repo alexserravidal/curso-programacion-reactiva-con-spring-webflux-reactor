@@ -17,7 +17,6 @@ import com.bolsadeideas.springboot.app.items.service.IItemService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
-@RequestMapping("/api/items")
 public class ItemController {
 	
 	@Autowired

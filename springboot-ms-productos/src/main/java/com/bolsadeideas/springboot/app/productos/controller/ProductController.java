@@ -13,7 +13,6 @@ import com.bolsadeideas.springboot.app.productos.entity.ProductEntity;
 import com.bolsadeideas.springboot.app.productos.service.IProductService;
 
 @RestController
-@RequestMapping("/api/products")
 public class ProductController {
 	
 	@Autowired

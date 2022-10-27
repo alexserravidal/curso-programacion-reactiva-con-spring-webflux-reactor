@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.bolsadeideas.springboot.app.items.dto.Product;
 
 
-@FeignClient(name = "ms-products", path = "/api/products")
+@FeignClient(name = "ms-products")
 public interface ProductClientFeign {
 	
 	@GetMapping("/")
