@@ -1,5 +1,6 @@
 package com.bolsadeideas.springboot.app.items.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bolsadeideas.springboot.app.items.dto.Item;
+import com.bolsadeideas.springboot.app.items.dto.Product;
 import com.bolsadeideas.springboot.app.items.service.IItemService;
 
 @RestController

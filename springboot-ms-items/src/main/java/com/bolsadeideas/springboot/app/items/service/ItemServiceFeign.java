@@ -1,5 +1,6 @@
 package com.bolsadeideas.springboot.app.items.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,10 +28,27 @@ public class ItemServiceFeign implements IItemService {
 	}
 
 	@Override
+	//@HystrixCommand(fallbackMethod="findByIdAndSetAmountFallbackMethod")
 	public Item findByIdAndSetAmount(Long id, Integer amount) {
 		
 		Product product = productClientRest.findById(id);
 		return new Item(product, amount, ItemServiceFeign.class.getName());
+		
+	}
+	
+	public Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount) {
+		
+		Item item = new Item();
+		Product product = new Product();
+		
+		item.setAmount(amount);
+		product.setId(id);
+		product.setName("Fallback Product");
+		product.setPrice(0.);
+		product.setCreatedAt(new Date());
+		
+		item.setProduct(product);
+		return item;
 		
 	}
 

@@ -36,7 +36,16 @@ public class ProductServiceImpl implements IProductService {
 		
 		Optional<ProductEntity> optionalProductEntity = productDao.findById(id);
 		if (optionalProductEntity.isEmpty()) return null;
-		return setProductPort(optionalProductEntity.get());
+		ProductEntity response = setProductPort(optionalProductEntity.get());
+		
+		try {
+			Thread.sleep(1000L);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return response;
 	}
 	
 	private ProductEntity setProductPort(ProductEntity productEntity) {
