@@ -9,12 +9,15 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.route.Route;
 import org.springframework.cloud.gateway.support.ServerWebExchangeUtils;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
 import reactor.core.publisher.Mono;
 
 @Component
+@Order(2)
 public class EjemploGlobalFilterMutateRequest implements GlobalFilter {
 	
 	private final Logger logger = LoggerFactory.getLogger(EjemploGlobalFilterMutateRequest.class);
@@ -27,6 +30,7 @@ public class EjemploGlobalFilterMutateRequest implements GlobalFilter {
 		 * Todo código CONCATENADO al RETURN va a ser un filtro POST
 		 */
 		logger.info("[PRE] EjemploGlobalFilterMutateRequest");
+		logger.info(" -> My order number is 2, so I should be the LAST to execute PRE and the FIRST to execute POST");
 		
 		URI uri = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR);
 		Route route = exchange.getAttribute(ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR);
@@ -54,5 +58,4 @@ public class EjemploGlobalFilterMutateRequest implements GlobalFilter {
 			
 		}));
 	}
-
 }
