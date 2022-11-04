@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bolsadeideas.springboot.app.items.dto.Item;
 import com.bolsadeideas.springboot.app.items.dto.Product;
 import com.bolsadeideas.springboot.app.items.service.IItemService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
 public class ItemController {
-	
-	@Autowired
-	private CircuitBreakerFactory cbFactory;
 	
 	@Autowired
 	@Qualifier("ItemServiceFeign")
@@ -44,42 +41,17 @@ public class ItemController {
 	}
 	
 	@GetMapping("/{id}/amount/{amount}")
+	@HystrixCommand(fallbackMethod = "findByIdAndSetAmountFallbackMethod")
 	public Item findByIdAndSetAmount(
 			@PathVariable Long id, 
 			@PathVariable Integer amount,
 			@RequestParam(required = false, defaultValue = "false") Boolean forceError
 			) {
 		
-		/*
-		 * ESTADO INICIAL CIRCUITO: "CERRADO"
-		 * En este estado, se analizan 100 requests
-		 * Si fallan más de 55 requests (umbral por defecto)
-		 * Entra a estado "ABIERTO", sinó sigue en "CERRADO"
-		 * 
-		 * Si ejecutamos 100 requests en POSTMAN
-		 * Primero 55 forzando el error (umbral de falla por defecto)
-		 * Luego 45 sin error
-		 * Y luego hacemos otra sin error, saltará igualmente el método de fallback
-		 * Porque el circuito ha entrado temporalmente en estado "ABIERTO"
-		 * 
-		 * ESTADO CIRCUITO: "ABIERTO"
-		 * En este estado, NO se analizan requests
-		 * Mantiene el método fallback SIEMPRE por 1 MINUTO (por defecto)
-		 * Tras el minuto, pasará a estado "SEMIABIERTO"
-		 * 
-		 * ESTADO CIRCUITO: "SEMIABIERTO"
-		 * En este estado, se analizan 10 requests
-		 * Si fallan más de 5 requests (umbral por defecto)
-		 * Vuelve a estado "ABIERTO", sinó a "CERRADO"
-		 */
-		return cbFactory.create("items").run(
-			() -> 
-				itemService.findByIdAndSetAmount(id, amount, forceError),
-			e -> findByIdAndSetAmountFallbackMethod(id, amount, false, e)
-		);
+		return itemService.findByIdAndSetAmount(id, amount, forceError);
 	}
 	
-	private Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Boolean uselessBooleanButHasToHaveSameSignature, Throwable e) {
+	public Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Boolean useFallbackMethod) {
 		
 		Item item = new Item();
 		Product product = new Product();

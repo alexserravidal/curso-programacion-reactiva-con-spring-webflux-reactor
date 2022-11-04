@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.bolsadeideas.springboot.app.items.client.ProductClientFeign;
 import com.bolsadeideas.springboot.app.items.dto.Item;
 import com.bolsadeideas.springboot.app.items.dto.Product;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @Service("ItemServiceFeign")
 @Primary
