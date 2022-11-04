@@ -6,9 +6,25 @@ spring:
         uri: lb://ms-products 
         predicates:
         - Path=/api/products/**
+        
+        #En PREDICATES se puede especificar varias condiciones. Si descomentásemos los de abajo, sólo
+        #se podría acceder a los endpoints cuando las peticiones cumpliesen los siguientes requisitos:
+        #   _ Tener un Header "token" con un dígito
+        #   _ Que el método sea un GET o un POST
+        #   _ Que la petición tenga un queryParam llamado "color"
+        
+        #- Header=token, \d+
+        #- Method=GET, POST
+        #- Query=color
+        
         filters:
         # Aquí se definen los segmentos que componen la ruta. /api/products/** tiene 2: api, products
         - StripPrefix=2
+        - name: AddMessageAndCookie
+          args:
+            message: Mensaje personalizado para MS-PRODUCTS
+            cookieName: GALLETA-PRODUCTS
+            cookieValue: GALLETA-PRODUCTS-VALUE
         
       - id: ms-items
         uri: lb://ms-items 
@@ -16,3 +32,15 @@ spring:
         - Path=/api/items/**
         filters:
         - StripPrefix=2
+        
+        # VER DIFERENCIA CON LA DECLARACIÓN DEL FILTRO EN MS-PRODUCTS. SON DOS FORMAS DISTINTAS DE HACER LO MISMO
+        # REQUIERE @Override shortcutFieldOrder()
+        - AddMessageAndCookie=Mensaje personalizado para MS-ITEMS, GALLETA-ITEMS, GALLETA-ITEMS-VALUE
+        
+        # FILTROS POR DEFECTO DE SPRINGCLOUD GATEWAY QUE SE ENVIAN EN EL REQUEST
+        - AddRequestHeader=sc-filter-add-rq-header, 123456
+        - AddRequestParameter=nombre, alex
+        
+        # FILTROS POR DEFECTO DE SPRINGCLOUD GATEWAY QUE SE ENVIAN EN LA RESPONSE
+        - AddResponseHeader=sc-filter-add-rs-header, 123456
+        #- SetResponseHeader=Content-Type, text/plain

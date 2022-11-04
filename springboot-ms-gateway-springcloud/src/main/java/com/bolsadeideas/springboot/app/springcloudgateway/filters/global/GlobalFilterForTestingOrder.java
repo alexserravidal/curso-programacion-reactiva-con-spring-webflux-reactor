@@ -1,4 +1,4 @@
-package com.bolsadeideas.springboot.app.springcloudgateway.filters;
+package com.bolsadeideas.springboot.app.springcloudgateway.filters.global;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

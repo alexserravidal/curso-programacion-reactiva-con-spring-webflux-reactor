@@ -1,4 +1,4 @@
-package com.bolsadeideas.springboot.app.springcloudgateway.filters;
+package com.bolsadeideas.springboot.app.springcloudgateway.filters.global;
 
 import java.net.URI;
 import java.util.Optional;
@@ -18,9 +18,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Order(2)
-public class EjemploGlobalFilterMutateRequest implements GlobalFilter {
+public class GlobalFilterMutateRequest implements GlobalFilter {
 	
-	private final Logger logger = LoggerFactory.getLogger(EjemploGlobalFilterMutateRequest.class);
+	private final Logger logger = LoggerFactory.getLogger(GlobalFilterMutateRequest.class);
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

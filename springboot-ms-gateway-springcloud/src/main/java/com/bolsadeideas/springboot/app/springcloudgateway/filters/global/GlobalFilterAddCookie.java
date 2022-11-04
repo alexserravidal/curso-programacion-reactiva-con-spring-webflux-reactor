@@ -1,4 +1,4 @@
-package com.bolsadeideas.springboot.app.springcloudgateway.filters;
+package com.bolsadeideas.springboot.app.springcloudgateway.filters.global;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,9 +13,9 @@ import reactor.core.publisher.Mono;
 
 @Component
 @Order(1)
-public class EjemploGlobalFilter implements GlobalFilter {
+public class GlobalFilterAddCookie implements GlobalFilter {
 	
-	private final Logger logger = LoggerFactory.getLogger(EjemploGlobalFilter.class);
+	private final Logger logger = LoggerFactory.getLogger(GlobalFilterAddCookie.class);
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
