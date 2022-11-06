@@ -71,6 +71,9 @@ public class ItemController {
 		 * En este estado, se analizan 10 requests
 		 * Si fallan más de 5 requests (umbral por defecto)
 		 * Vuelve a estado "ABIERTO", sinó a "CERRADO"
+		 * 
+		 * Los valores por defecto pueden estar alterados por la clase 
+		 * Resilience4JConfiguration.java
 		 */
 		return cbFactory.create("items").run(
 			() -> 
