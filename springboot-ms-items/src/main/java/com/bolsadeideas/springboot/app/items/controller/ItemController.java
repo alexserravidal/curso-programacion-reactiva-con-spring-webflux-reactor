@@ -16,6 +16,8 @@ import com.bolsadeideas.springboot.app.items.dto.Item;
 import com.bolsadeideas.springboot.app.items.dto.Product;
 import com.bolsadeideas.springboot.app.items.service.IItemService;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 @RestController
 public class ItemController {
 	
@@ -40,10 +42,14 @@ public class ItemController {
 	public List<Item> findAll() {
 		
 		return itemService.findAll();
-		
 	}
 	
+	/*
+	 * El uso de la anotación @CircuitBreaker SÓLO FUNCIONA CON CONFIG VIA application.yml
+	 * No funcionaría usando Resilience4JConfiguration.java
+	 */	
 	@GetMapping("/{id}/amount/{amount}")
+	@CircuitBreaker(name = "items", fallbackMethod = "findByIdAndSetAmountFallbackMethod")
 	public Item findByIdAndSetAmount(
 			@PathVariable Long id, 
 			@PathVariable Integer amount,
@@ -51,6 +57,20 @@ public class ItemController {
 			@RequestParam(required = false, defaultValue = "0") Long forceTimeoutInMs
 			) {
 		
+		return itemService.findByIdAndSetAmount(id, amount, forceError, forceTimeoutInMs);
+	}
+	
+	@GetMapping("/use-cb-factory/{id}/amount/{amount}")
+	public Item findByIdAndSetAmountUsingCbFactory(
+			@PathVariable Long id, 
+			@PathVariable Integer amount,
+			@RequestParam(required = false, defaultValue = "false") Boolean forceError,
+			@RequestParam(required = false, defaultValue = "0") Long forceTimeoutInMs
+			) {
+		return findByIdAndSetAmountUsingCbFactoryImpl(id, amount, forceError, forceTimeoutInMs);
+	}
+	
+	private Item findByIdAndSetAmountUsingCbFactoryImpl(Long id, Integer amount, Boolean forceError, Long forceTimeoutInMs) {
 		/*
 		 * ESTADO INICIAL CIRCUITO: "CERRADO"
 		 * En este estado, se analizan 100 requests
@@ -79,11 +99,11 @@ public class ItemController {
 		return cbFactory.create("items").run(
 			() -> 
 				itemService.findByIdAndSetAmount(id, amount, forceError, forceTimeoutInMs),
-			e -> findByIdAndSetAmountFallbackMethod(id, amount, e)
+			e -> findByIdAndSetAmountFallbackMethod(id, amount, forceError, forceTimeoutInMs, e)
 		);
 	}
 	
-	private Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Throwable e) {
+	private Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Boolean forceError, Long forceTimeoutInMs, Throwable e) {
 		
 		Item item = new Item();
 		Product product = new Product();
