@@ -19,6 +19,11 @@ spring:
         
         filters:
         # Aquí se definen los segmentos que componen la ruta. /api/products/** tiene 2: api, products
+        # Filtro necesario para activar CircuitBreaker
+        - name: CircuitBreaker
+          args:
+            name: products
+            statusCodes: 500
         - StripPrefix=2
         - name: AddMessageAndCookie
           args:
@@ -44,3 +49,29 @@ spring:
         # FILTROS POR DEFECTO DE SPRINGCLOUD GATEWAY QUE SE ENVIAN EN LA RESPONSE
         - AddResponseHeader=sc-filter-add-rs-header, 123456
         #- SetResponseHeader=Content-Type, text/plain
+        
+#RESILIENCE4J CONFIG
+resilience4j:
+
+  #CIRCUITBREAKER CONFIG AND INSTANCES
+  circuitbreaker:
+    configs:
+      products:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 10
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 1s
+    instances:
+      products:
+        base-config: products
+        
+  #TIMELIMITER CONFIG AND INSTANCES
+  timelimiter:
+    configs:
+      products:
+        timeout-duration: 3s
+    instances:
+      products:
+        base-config: products
