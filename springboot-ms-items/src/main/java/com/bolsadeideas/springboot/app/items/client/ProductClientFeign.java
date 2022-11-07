@@ -17,6 +17,6 @@ public interface ProductClientFeign {
 	public List<Product> findAll();
 	
 	@GetMapping("/{id}")
-	public Product findById(@PathVariable Long id, @RequestParam Boolean forceError);
+	public Product findById(@PathVariable Long id, @RequestParam Boolean forceError, @RequestParam Long forceTimeoutInMs);
 
 }

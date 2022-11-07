@@ -47,7 +47,8 @@ public class ItemController {
 	public Item findByIdAndSetAmount(
 			@PathVariable Long id, 
 			@PathVariable Integer amount,
-			@RequestParam(required = false, defaultValue = "false") Boolean forceError
+			@RequestParam(required = false, defaultValue = "false") Boolean forceError,
+			@RequestParam(required = false, defaultValue = "0") Long forceTimeoutInMs
 			) {
 		
 		/*
@@ -77,12 +78,12 @@ public class ItemController {
 		 */
 		return cbFactory.create("items").run(
 			() -> 
-				itemService.findByIdAndSetAmount(id, amount, forceError),
-			e -> findByIdAndSetAmountFallbackMethod(id, amount, false, e)
+				itemService.findByIdAndSetAmount(id, amount, forceError, forceTimeoutInMs),
+			e -> findByIdAndSetAmountFallbackMethod(id, amount, e)
 		);
 	}
 	
-	private Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Boolean uselessBooleanButHasToHaveSameSignature, Throwable e) {
+	private Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Throwable e) {
 		
 		Item item = new Item();
 		Product product = new Product();

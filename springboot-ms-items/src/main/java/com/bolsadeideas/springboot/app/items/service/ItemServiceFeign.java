@@ -28,9 +28,9 @@ public class ItemServiceFeign implements IItemService {
 	}
 
 	@Override
-	public Item findByIdAndSetAmount(Long id, Integer amount, Boolean forceError) {
+	public Item findByIdAndSetAmount(Long id, Integer amount, Boolean forceError, Long forceTimeoutInMs) {
 		
-		Product product = productClientRest.findById(id, forceError);
+		Product product = productClientRest.findById(id, forceError, forceTimeoutInMs);
 		return new Item(product, amount, ItemServiceFeign.class.getName());
 		
 	}
