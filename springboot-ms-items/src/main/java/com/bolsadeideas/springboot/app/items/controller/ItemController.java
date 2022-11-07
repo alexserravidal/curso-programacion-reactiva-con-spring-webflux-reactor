@@ -2,6 +2,7 @@ package com.bolsadeideas.springboot.app.items.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,6 +18,8 @@ import com.bolsadeideas.springboot.app.items.dto.Product;
 import com.bolsadeideas.springboot.app.items.service.IItemService;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+import reactor.core.publisher.Flux;
 
 @RestController
 public class ItemController {
@@ -44,20 +47,27 @@ public class ItemController {
 		return itemService.findAll();
 	}
 	
+	@GetMapping("/{id}/amount/{amount}")
 	/*
 	 * El uso de la anotación @CircuitBreaker SÓLO FUNCIONA CON CONFIG VIA application.yml
 	 * No funcionaría usando Resilience4JConfiguration.java
 	 */	
-	@GetMapping("/{id}/amount/{amount}")
-	@CircuitBreaker(name = "items", fallbackMethod = "findByIdAndSetAmountFallbackMethod")
-	public Item findByIdAndSetAmount(
+	@CircuitBreaker(name = "items", fallbackMethod = "findByIdAndSetAmountFallbackMethodCompletableFuture")
+	/*
+	 * El uso de la anotación @TimeLimitter obliga la función a devolver CompletableFuture<T>
+	 * SI SE USA @CircuitBreaker + @TimeLimiter DEJAR EL FALLBACKMETHOD EN @CircuitBreaker
+	 * Hay que usar esta anotación si se quiere aplicar la configuración de tiempo,
+	 * A DIFERENCIA DE USANDO cbFactory, que la incluye.
+	 */
+	@TimeLimiter(name = "items" /*, fallbackMethod = "findByIdAndSetAmountFallbackMethodCompletableFuture" */)
+	public CompletableFuture<Item> findByIdAndSetAmount(
 			@PathVariable Long id, 
 			@PathVariable Integer amount,
 			@RequestParam(required = false, defaultValue = "false") Boolean forceError,
 			@RequestParam(required = false, defaultValue = "0") Long forceTimeoutInMs
 			) {
 		
-		return itemService.findByIdAndSetAmount(id, amount, forceError, forceTimeoutInMs);
+		return CompletableFuture.supplyAsync(() -> itemService.findByIdAndSetAmount(id, amount, forceError, forceTimeoutInMs));
 	}
 	
 	@GetMapping("/use-cb-factory/{id}/amount/{amount}")
@@ -104,19 +114,25 @@ public class ItemController {
 	}
 	
 	private Item findByIdAndSetAmountFallbackMethod(Long id, Integer amount, Boolean forceError, Long forceTimeoutInMs, Throwable e) {
-		
+		return findByIdAndSetAmountFallbackMethodImpl(id, amount, "Fallback Product");
+	}
+	
+	private CompletableFuture<Item> findByIdAndSetAmountFallbackMethodCompletableFuture(Long id, Integer amount, Boolean forceError, Long forceTimeoutInMs, Throwable e) {
+		return CompletableFuture.supplyAsync(() -> findByIdAndSetAmountFallbackMethodImpl(id, amount, "Fallback Product (CompletableFuture)"));
+	}
+	
+	private Item findByIdAndSetAmountFallbackMethodImpl(Long id, Integer amount, String name) {
 		Item item = new Item();
 		Product product = new Product();
 		
 		item.setAmount(amount);
 		product.setId(id);
-		product.setName("Fallback Product");
+		product.setName(name);
 		product.setPrice(0.);
 		product.setCreatedAt(new Date());
 		
 		item.setProduct(product);
 		return item;
-		
 	}
 
 }
