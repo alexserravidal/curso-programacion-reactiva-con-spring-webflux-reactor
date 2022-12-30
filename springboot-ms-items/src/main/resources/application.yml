@@ -1,3 +1,6 @@
+server:
+  port: 8003
+
 # Esto SOBREESCRIBE a Resilience4JConfiguration.java
 resilience4j:
 
