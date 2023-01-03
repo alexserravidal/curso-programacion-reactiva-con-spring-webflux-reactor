@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.bolsadeideas.testing.daos.ProductDao;
 import com.bolsadeideas.testing.data.ProductsMockData;
@@ -68,6 +69,21 @@ public class ProductServiceTest {
 		Optional<Product> product = productService.findById(1L);
 		
 		Assertions.assertEquals(true, product.isEmpty());
+	}
+	
+	@Test
+	void addProduct() {
+		
+		Product productSample = ProductsMockData.getProduct1();
+		ProductEntity productSampleEntity = ProductMapper.INSTANCE.productToProductEntity(productSample);
+		productSampleEntity.setId(Long.valueOf(ThreadLocalRandom.current().nextLong()));
+		
+		when(productDao.save(any())).thenReturn(productSampleEntity);
+		
+		Product addedProduct = productService.addProduct(productSample);
+		
+		Assertions.assertEquals(productSample.getName(), addedProduct.getName());
+		
 	}
 
 }

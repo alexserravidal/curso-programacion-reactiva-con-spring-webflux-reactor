@@ -10,5 +10,7 @@ public interface IProductService {
 	public List<Product> findAll();
 	
 	public Optional<Product> findById(Long id);
+	
+	public Product addProduct(Product product);
 
 }

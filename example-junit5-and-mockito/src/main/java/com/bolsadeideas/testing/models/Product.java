@@ -1,9 +1,16 @@
 package com.bolsadeideas.testing.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 public class Product {
 	
+	@Schema(hidden = true)
 	private Long id;
 	
+	@NotEmpty(message = "Field 'name' can't be empty")
 	private String name;
 	
 	private String description;
@@ -12,6 +19,7 @@ public class Product {
 	
 	private String availability;
 	
+	@Min(value = 1, message = "Price value can't be less than 1")
 	private Integer price;
 	
 	private String color;

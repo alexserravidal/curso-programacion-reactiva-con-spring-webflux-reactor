@@ -9,6 +9,10 @@ public class ProductsMockData {
 		return createProduct(1L, "ABRIGO", "ABRIGO PIEL", "ABRIGO", "IN_STOCK", 4000, "NEGRO");
 	}
 	
+	public static Product getProductWithPrice0() {
+		return createProduct(1L, "ABRIGO", "ABRIGO PIEL", "ABRIGO", "IN_STOCK", 0, "NEGRO");
+	}
+	
 	public static Product createProduct(Long id, String name, String desc, String type, String availability, int price, String color) {
 		final Product product = new Product();
 		product.setId(id);

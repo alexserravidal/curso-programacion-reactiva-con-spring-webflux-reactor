@@ -39,4 +39,11 @@ public class ProductService implements IProductService {
 		
 	}
 
+	@Override
+	public Product addProduct(Product product) {
+		product.setId(null);
+		final ProductEntity productToSave = ProductMapper.INSTANCE.productToProductEntity(product);
+		return ProductMapper.INSTANCE.productEntityToProduct(productDao.save(productToSave));
+	}
+
 }
