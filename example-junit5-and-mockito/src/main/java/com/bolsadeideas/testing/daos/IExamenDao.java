@@ -7,5 +7,7 @@ import com.bolsadeideas.testing.models.Examen;
 public interface IExamenDao {
 	
 	List<Examen> findAll();
+	
+	Examen save(Examen examen);
 
 }

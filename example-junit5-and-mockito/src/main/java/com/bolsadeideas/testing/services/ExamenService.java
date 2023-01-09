@@ -1,5 +1,6 @@
 package com.bolsadeideas.testing.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.bolsadeideas.testing.daos.IExamenDao;
@@ -32,6 +33,16 @@ public class ExamenService implements IExamenService {
 			examen.setPreguntas(preguntaDao.findPreguntasByExamenId(examen.getId()));
 			return examen;
 		}).orElseThrow();
+	}
+
+	@Override
+	public Examen save(Examen examen) {
+		
+		List<String> savedPreguntas;
+		if (!examen.getPreguntas().isEmpty()) savedPreguntas = preguntaDao.save(examen.getPreguntas());
+		
+		return examenDao.save(examen);
+
 	}
 
 }

@@ -5,5 +5,7 @@ import java.util.List;
 public interface IPreguntaDao {
 	
 	List<String> findPreguntasByExamenId(Long id);
+	
+	List<String> save(List<String> preguntas);
 
 }

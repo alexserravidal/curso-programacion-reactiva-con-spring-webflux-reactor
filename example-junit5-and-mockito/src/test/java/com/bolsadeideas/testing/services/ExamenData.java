@@ -7,6 +7,16 @@ import com.bolsadeideas.testing.models.Examen;
 
 public class ExamenData {
 	
+	public static Examen getExamWithQuestions() {
+		Examen examenWithPreguntas = new Examen(1L, "Matemáticas");
+		examenWithPreguntas.setPreguntas(getPreguntasMatematicas());
+		return examenWithPreguntas;
+	}
+	
+	public static Examen getExamWithoutQuestions() {
+		return new Examen(1L, "Matemáticas");
+	}
+	
 	public static List<Examen> getExamsList() {
 		
 		return Arrays.asList(
