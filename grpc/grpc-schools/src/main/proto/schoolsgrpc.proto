@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.bolsadeideas.grpcschools.grpc";
+
+service schoolsService {
+
+  rpc findAll(Empty) returns (SchoolsGrpcList) {}
+  rpc findById(id) returns (SchoolGrpcObject) {}
+
+}
+
+message Empty { }
+
+message id {
+  int64 id = 1;
+}
+
+message SchoolGrpcObject {
+  int64 id = 1;
+  string name = 2;
+  string address = 3;
+  int32 status = 4;
+}
+
+message SchoolsGrpcList {
+  repeated SchoolGrpcObject schools = 1;
+}
+
+  /*
+  public SchoolEntity save(SchoolEntity schoolEntity) {
+  return schoolsRepository.save(schoolEntity);
+      }
+
+  public void delete(Long schoolId) {
+  schoolsRepository.deleteById(schoolId);
+      }
+   */
