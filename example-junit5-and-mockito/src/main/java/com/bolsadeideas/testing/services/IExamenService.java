@@ -11,5 +11,7 @@ public interface IExamenService {
 	public Examen findByNameIncludePreguntas(String name);
 	
 	public Examen save(Examen examen);
+	
+	public void uselessVoidMethod(Long uselessParam);
 
 }

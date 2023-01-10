@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -222,6 +223,51 @@ public class ExamenServiceTest {
 		assertFalse(matcher.matches(4L));
 		System.out.println("Matcher toString() AFTER trying match: " + matcher.toString());
 		
+	}
+	
+	@Test
+	void testArgumentCaptor() {
+		
+		when(examenDao.findAll()).thenReturn(ExamenData.getExamsList());
+		when(preguntaDao.findPreguntasByExamenId(anyLong())).thenReturn(ExamenData.getPreguntasHistoria());
+		
+		examenService.findByNameIncludePreguntas("Historia");
+		
+		/* Esto es sustituible por 
+		 * @Captor ArgumentCaptor<Long> captor 
+		 * en los atributos de la clase*/
+		ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+		verify(preguntaDao).findPreguntasByExamenId(captor.capture());
+		
+		assertEquals(3L, captor.getValue());
+	}
+	
+	@Test
+	void testDoThrow() {
+		
+		/*
+		 * El método "when" no es aplicable a métodos void
+		 * Usar doThrow para voids
+		 */
+		//when(preguntaDao.uselessVoidMethod()).thenThrow(RuntimeException.class);		
+		doThrow(RuntimeException.class).when(preguntaDao).uselessVoidMethod(anyLong());
+		
+		assertThrows(RuntimeException.class, () -> examenService.uselessVoidMethod(0L));
+	}
+	
+	@Test
+	void testUselessMethod() {
+		
+		doAnswer(new Answer<Long>() {
+			@Override
+			public Long answer(InvocationOnMock invocation) throws Throwable {
+				return 123L;
+			}
+		}).when(preguntaDao).uselessVoidMethod(anyLong());
+		
+		examenService.uselessVoidMethod(anyLong());
+		
+		verify(preguntaDao).uselessVoidMethod(anyLong());
 	}
 	
 	private static Stream<Arguments> getPreguntasSizeByName() {

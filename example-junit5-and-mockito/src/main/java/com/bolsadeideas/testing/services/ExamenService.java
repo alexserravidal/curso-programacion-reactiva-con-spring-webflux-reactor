@@ -45,4 +45,9 @@ public class ExamenService implements IExamenService {
 
 	}
 
+	@Override
+	public void uselessVoidMethod(Long uselessParam) {
+		preguntaDao.uselessVoidMethod(uselessParam);
+	}
+
 }
