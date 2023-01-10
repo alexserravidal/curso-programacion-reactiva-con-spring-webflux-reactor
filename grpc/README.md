@@ -1,4 +1,3 @@
-
 ## 1. Introducción
 
 Este proyecto consta de dos microservicios:
@@ -14,3 +13,6 @@ Este proyecto consta de dos microservicios:
 - Para ejecutarlo, hay que escribir el siguiente comando en su carpeta raíz:
 ``mvn clean install spring-boot:run``
 - Una vez levantado, se puede acceder a su Swagger en http://localhost:8081/swagger-ui/index.html
+## 2. Contenido de utilidad
+Dependencia Starter de gRPC para usar con SpringBoot. Te enseña que dependencias asignar en cada caso:
+https://yidongnan.github.io/grpc-spring-boot-starter/en/server/getting-started.html
