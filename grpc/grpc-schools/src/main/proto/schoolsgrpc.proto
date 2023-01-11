@@ -3,7 +3,7 @@ syntax = "proto3";
 option java_multiple_files = true;
 option java_package = "com.bolsadeideas.grpcschools.grpc";
 
-service schoolsService {
+service SchoolsService {
 
   rpc findAll(Empty) returns (SchoolsGrpcList) {}
   rpc findById(id) returns (SchoolGrpcObject) {}
