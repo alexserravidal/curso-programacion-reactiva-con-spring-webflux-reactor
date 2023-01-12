@@ -21,5 +21,7 @@ http://localhost:8080/swagger-ui/index.html
 ``mvn clean install spring-boot:run``
 - Una vez levantado, se puede acceder a su Swagger en http://localhost:8081/swagger-ui/index.html
 ## 2. Contenido de utilidad
+- Curso de gRPC con proyectos SpringBoot.     
+https://www.youtube.com/watch?v=-AqN0Y_7XUo&list=PL_3hPhrkuPT4a_EXzmJJPNM4czF8uFrv2&index=6
 - Dependencia Starter de gRPC para usar con SpringBoot. Muestra cómo distribuir los proyectos y qué dependencias requiere cada uno.     
 https://yidongnan.github.io/grpc-spring-boot-starter/en/server/getting-started.html
