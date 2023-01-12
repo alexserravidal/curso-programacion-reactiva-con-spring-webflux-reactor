@@ -6,13 +6,13 @@ option java_package = "com.bolsadeideas.grpcschoolsinterface.grpc";
 service SchoolsService {
 
   rpc findAll(Empty) returns (SchoolsGrpcList) {}
-  rpc findById(id) returns (SchoolGrpcObject) {}
+  rpc findById(FindByIdRequestParams) returns (SchoolGrpcObject) {}
 
 }
 
 message Empty { }
 
-message id {
+message FindByIdRequestParams {
   int64 id = 1;
 }
 

@@ -3,6 +3,7 @@ package com.bolsadeideas.grpcstudents.controllers;
 import java.util.List;
 import java.util.Optional;
 
+import com.bolsadeideas.grpcstudents.models.Student;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +34,11 @@ public class StudentsController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<StudentEntity> findById(@PathVariable Long id) {
+	public ResponseEntity<Student> findById(@PathVariable Long id) {
 		
-		Optional<StudentEntity> optSchoolEntity = studentsService.findById(id);
+		Optional<Student> optionalStudent = studentsService.findById(id);
 		
-		if (optSchoolEntity.isPresent()) return ResponseEntity.ok(optSchoolEntity.get());
+		if (optionalStudent.isPresent()) return ResponseEntity.ok(optionalStudent.get());
 		
 		return ResponseEntity.notFound().build();
 	}
@@ -55,8 +56,8 @@ public class StudentsController {
 			@RequestBody StudentEntity schoolEntity
 	) {
 		
-		Optional<StudentEntity> doesEntityExist = studentsService.findById(id);
-		if (doesEntityExist.isEmpty()) return ResponseEntity.notFound().build();
+		Optional<Student> doesStudentExist = studentsService.findById(id);
+		if (doesStudentExist.isEmpty()) return ResponseEntity.notFound().build();
 		
 		schoolEntity.setId(id);
 		return ResponseEntity.ok(studentsService.save(schoolEntity));
@@ -65,8 +66,8 @@ public class StudentsController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		
-		Optional<StudentEntity> doesEntityExist = studentsService.findById(id);
-		if (doesEntityExist.isEmpty()) return ResponseEntity.notFound().build();
+		Optional<Student> doesStudentExist = studentsService.findById(id);
+		if (doesStudentExist.isEmpty()) return ResponseEntity.notFound().build();
 		
 		studentsService.delete(id);
 		return ResponseEntity.noContent().build();

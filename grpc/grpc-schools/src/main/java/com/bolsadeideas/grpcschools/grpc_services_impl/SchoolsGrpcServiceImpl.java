@@ -2,11 +2,7 @@ package com.bolsadeideas.grpcschools.grpc_services_impl;
 
 import com.bolsadeideas.grpcschools.entities.SchoolEntity;
 import com.bolsadeideas.grpcschools.services.SchoolsService;
-import com.bolsadeideas.grpcschoolsinterface.grpc.Empty;
-import com.bolsadeideas.grpcschoolsinterface.grpc.SchoolGrpcObject;
-import com.bolsadeideas.grpcschoolsinterface.grpc.SchoolsGrpcList;
-import com.bolsadeideas.grpcschoolsinterface.grpc.SchoolsServiceGrpc;
-import com.bolsadeideas.grpcschoolsinterface.grpc.id;
+import com.bolsadeideas.grpcschoolsinterface.grpc.*;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +32,7 @@ public class SchoolsGrpcServiceImpl extends SchoolsServiceGrpc.SchoolsServiceImp
     }
 
     @Override
-    public void findById(id request, StreamObserver<SchoolGrpcObject> responseObserver) {
+    public void findById(FindByIdRequestParams request, StreamObserver<SchoolGrpcObject> responseObserver) {
 
         Optional<SchoolEntity> optSchoolEntity = schoolsService.findById(request.getId());
 
