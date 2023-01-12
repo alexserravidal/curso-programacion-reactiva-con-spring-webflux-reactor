@@ -1,12 +1,14 @@
 package com.bolsadeideas.grpcschools.entities;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "SCHOOLS")
 @Data
+@NoArgsConstructor
 public class SchoolEntity {
 	
 	@Id
@@ -18,5 +20,11 @@ public class SchoolEntity {
 	private String address;
 
 	private Integer status;
+
+	public SchoolEntity(String name, String address, Integer status) {
+		this.name = name;
+		this.address = address;
+		this.status = status;
+	}
 
 }

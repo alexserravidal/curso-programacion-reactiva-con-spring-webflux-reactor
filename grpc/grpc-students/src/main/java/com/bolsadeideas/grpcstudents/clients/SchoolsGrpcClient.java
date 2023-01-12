@@ -6,20 +6,29 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.springframework.stereotype.Service;
 import com.bolsadeideas.grpcschoolsinterface.grpc.*;
 
+import java.util.List;
+
 @Service
 public class SchoolsGrpcClient implements ISchoolsClient {
 
     private ManagedChannel channel = NettyChannelBuilder.forAddress("localhost", 9090).usePlaintext().build();
+    private SchoolsServiceGrpc.SchoolsServiceBlockingStub stub = SchoolsServiceGrpc.newBlockingStub(channel);
 
     public School findById(Long id) {
 
-        SchoolsServiceGrpc.SchoolsServiceBlockingStub stub = SchoolsServiceGrpc.newBlockingStub(channel);
         FindByIdRequestParams findByIdRequestParams = FindByIdRequestParams
                 .newBuilder()
                 .setId(id)
                 .build();
         SchoolGrpcObject schoolGrpcObject = stub.findById(findByIdRequestParams);
         return new School(schoolGrpcObject);
+
+    }
+
+    public List<School> findAll() {
+
+        SchoolsGrpcList schoolsGrpcList = stub.findAll(Empty.newBuilder().build());
+        return schoolsGrpcList.getSchoolsList().stream().map(School::new).toList();
 
     }
 
