@@ -1,9 +1,12 @@
 package com.bolsadeideas.grpcschools.grpc_services_impl;
 
 import com.bolsadeideas.grpcschools.entities.SchoolEntity;
-import com.bolsadeideas.grpcschools.grpc.*;
-import com.bolsadeideas.grpcschools.grpc.SchoolsServiceGrpc.SchoolsServiceImplBase;
 import com.bolsadeideas.grpcschools.services.SchoolsService;
+import com.bolsadeideas.grpcschoolsinterface.grpc.Empty;
+import com.bolsadeideas.grpcschoolsinterface.grpc.SchoolGrpcObject;
+import com.bolsadeideas.grpcschoolsinterface.grpc.SchoolsGrpcList;
+import com.bolsadeideas.grpcschoolsinterface.grpc.SchoolsServiceGrpc;
+import com.bolsadeideas.grpcschoolsinterface.grpc.id;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @GrpcService
-public class SchoolsGrpcServiceImpl extends SchoolsServiceImplBase
+public class SchoolsGrpcServiceImpl extends SchoolsServiceGrpc.SchoolsServiceImplBase
 {
 
     @Autowired
