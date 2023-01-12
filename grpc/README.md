@@ -1,5 +1,5 @@
 ## 1. Definición
-Este proyecto consta de una interfaz gRPC y dos microservicios, que se ejecutan uno como servidor gRPC y el otro como cliente gRPC:
+Este proyecto consta de una interfaz gRPC y dos microservicios, que se ejecutan uno como servidor gRPC y el otro como cliente gRPC.
 ### 1.1 gRPC Schools Interface
 - Contiene el archivo .proto y el plugin de generación de las clases Java a partir de tales archivos. Los dos microservicios definidos a continuación dependen de este proyecto.
 - Actúa como **interfaz gRPC**
