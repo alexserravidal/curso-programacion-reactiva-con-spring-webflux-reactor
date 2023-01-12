@@ -13,6 +13,10 @@ service GreetingService {
   // SERVER STREAM COMMUNICATION:
   // 1 CLIENT REQUEST -> N SERVER RESPONSES
   rpc greetManyTimes(GreetingRequest) returns (stream GreetingResponse);
+
+  // CLIENT STREAM COMMUNICATION:
+  // N CLIENT REQUESTS -> 1 SERVER RESPONSE
+  rpc longGreet(stream GreetingRequest) returns (GreetingResponse);
 }
 
 message GreetingRequest {

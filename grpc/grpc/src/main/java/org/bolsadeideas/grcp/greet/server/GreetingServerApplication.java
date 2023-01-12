@@ -3,13 +3,16 @@ package org.bolsadeideas.grcp.greet.server;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import org.bolsadeideas.grcp.greet.Configuration;
+import org.bolsadeideas.grcp.greet.Log;
 
 import java.io.IOException;
 
 public class GreetingServerApplication {
 
+    private static Log logger = Log.getInstance(GreetingServerApplication.class);
+
     private static void log(String log) {
-        System.out.println("GreetingServerApplication: " + log);
+        logger.log(log);
     }
     public static void main(String[] args) throws IOException, InterruptedException {
 
