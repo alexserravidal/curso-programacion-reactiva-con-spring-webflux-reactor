@@ -23,4 +23,10 @@ public class School {
         this.status = schoolGrpcObject.getStatus();
     }
 
+    public School(String name, String address, Integer status) {
+        this.name = name;
+        this.address = address;
+        this.status = status;
+    }
+
 }
