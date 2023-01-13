@@ -17,6 +17,10 @@ service GreetingService {
   // CLIENT STREAM COMMUNICATION:
   // N CLIENT REQUESTS -> 1 SERVER RESPONSE
   rpc longGreet(stream GreetingRequest) returns (GreetingResponse);
+
+  // BI-DIRECTIONAL STREAMING:
+  // N CLIENT REQUESTS -> N SERVER RESPONSES
+  rpc greetManyPeople(stream GreetingRequest) returns (stream GreetingResponse);
 }
 
 message GreetingRequest {

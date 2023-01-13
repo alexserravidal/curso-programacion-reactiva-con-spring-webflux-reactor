@@ -5,6 +5,7 @@ import com.bolsadeideas.grcp.greet.GreetingResponse;
 import com.bolsadeideas.grcp.greet.GreetingServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import org.bolsadeideas.grcp.greet.Log;
+import org.bolsadeideas.grcp.greet.PeopleData;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -73,6 +74,46 @@ public class GreetingServerImpl extends GreetingServiceGrpc.GreetingServiceImplB
                                 .setResult(sb.toString())
                                 .build()
                 );
+                responseObserver.onCompleted();
+            }
+        };
+
+    }
+
+    @Override
+    public StreamObserver<GreetingRequest> greetManyPeople(StreamObserver<GreetingResponse> responseObserver) {
+
+        return new StreamObserver<GreetingRequest>() {
+            @Override
+            public void onNext(GreetingRequest value) {
+                logger.log("Got a GreetingRequest for " + value.getFirstName());
+                String greet = getGreetingFromRequest(value);
+
+                logger.log("I'm lazy so I'll take 2 seconds to greet");
+                try {
+                    TimeUnit.SECONDS.sleep(2L);
+                } catch (InterruptedException e) {
+                    responseObserver.onError(e);
+                }
+
+                logger.log("Okay, going to greet " + value.getFirstName() + " now");
+
+                if(value.getFirstName().equals(PeopleData.SERVER_ENEMY())) {
+                    logger.log("No way I'm greeting this one. I'll stop now");
+                    responseObserver.onCompleted();
+                }
+                else {
+                    responseObserver.onNext(
+                            GreetingResponse.newBuilder().setResult(greet).build()
+                    );
+                }
+            }
+
+            @Override
+            public void onError(Throwable t) {}
+
+            @Override
+            public void onCompleted() {
                 responseObserver.onCompleted();
             }
         };
