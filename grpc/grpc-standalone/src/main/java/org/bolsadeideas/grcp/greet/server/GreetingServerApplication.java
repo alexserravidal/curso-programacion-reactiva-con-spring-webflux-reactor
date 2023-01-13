@@ -2,8 +2,8 @@ package org.bolsadeideas.grcp.greet.server;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
-import org.bolsadeideas.grcp.greet.Configuration;
-import org.bolsadeideas.grcp.greet.Log;
+import org.bolsadeideas.grcp.Configuration;
+import org.bolsadeideas.grcp.Log;
 
 import java.io.IOException;
 

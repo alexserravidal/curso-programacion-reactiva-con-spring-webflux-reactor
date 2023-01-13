@@ -1,4 +1,4 @@
-package org.bolsadeideas.grcp.greet;
+package org.bolsadeideas.grcp;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

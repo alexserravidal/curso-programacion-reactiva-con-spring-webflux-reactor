@@ -6,9 +6,9 @@ import com.bolsadeideas.grcp.greet.GreetingServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import org.bolsadeideas.grcp.greet.Configuration;
-import org.bolsadeideas.grcp.greet.Log;
-import org.bolsadeideas.grcp.greet.PeopleData;
+import org.bolsadeideas.grcp.Configuration;
+import org.bolsadeideas.grcp.Log;
+import org.bolsadeideas.grcp.PeopleData;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 public class GreetingClientApplication {
 
     private static Log logger = Log.getInstance(GreetingClientApplication.class);
+    private static boolean IS_RESPONSES_STREAM_ALIVE = true;
+    public static boolean getIsResponsesStreamAlive() { return IS_RESPONSES_STREAM_ALIVE; }
+    private static void setIsResponsesStreamAlive(boolean value) { IS_RESPONSES_STREAM_ALIVE = value; }
 
     public static void main(String[] args) throws Exception {
         if (args.length == 0) {
@@ -97,10 +100,6 @@ public class GreetingClientApplication {
         stream.onCompleted();
         countDownLatch.await();
     }
-
-    private static boolean IS_RESPONSES_STREAM_ALIVE = true;
-    public static boolean getIsResponsesStreamAlive() { return IS_RESPONSES_STREAM_ALIVE; }
-    private static void setIsResponsesStreamAlive(boolean value) { IS_RESPONSES_STREAM_ALIVE = value; }
 
     private static void doGreetManyPeople(ManagedChannel channel) throws InterruptedException {
 

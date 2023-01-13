@@ -1,0 +1,20 @@
+syntax = "proto3";
+package math;
+
+option java_package = "com.bolsadeideas.grcp.math";
+option java_multiple_files = true;
+
+service MathService {
+
+  // Returns a Status.INVALID_ARGUMENT if the SqrtRequest.number is negative
+  rpc sqrt(SqrtRequest) returns (SqrtResponse);
+
+}
+
+message SqrtRequest {
+  uint32 number = 1;
+}
+
+message SqrtResponse {
+  double result = 1;
+}

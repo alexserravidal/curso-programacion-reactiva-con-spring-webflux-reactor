@@ -4,7 +4,7 @@ import com.bolsadeideas.grcp.greet.GreetingRequest;
 import com.bolsadeideas.grcp.greet.GreetingResponse;
 import com.bolsadeideas.grcp.greet.GreetingServiceGrpc;
 import io.grpc.ManagedChannel;
-import org.bolsadeideas.grcp.greet.Log;
+import org.bolsadeideas.grcp.Log;
 
 import java.util.Iterator;
 

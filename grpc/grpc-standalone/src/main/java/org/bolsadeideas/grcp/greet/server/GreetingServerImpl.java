@@ -4,8 +4,8 @@ import com.bolsadeideas.grcp.greet.GreetingRequest;
 import com.bolsadeideas.grcp.greet.GreetingResponse;
 import com.bolsadeideas.grcp.greet.GreetingServiceGrpc;
 import io.grpc.stub.StreamObserver;
-import org.bolsadeideas.grcp.greet.Log;
-import org.bolsadeideas.grcp.greet.PeopleData;
+import org.bolsadeideas.grcp.Log;
+import org.bolsadeideas.grcp.PeopleData;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;

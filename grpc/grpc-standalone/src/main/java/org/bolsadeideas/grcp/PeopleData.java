@@ -1,4 +1,4 @@
-package org.bolsadeideas.grcp.greet;
+package org.bolsadeideas.grcp;
 
 import java.util.Arrays;
 import java.util.List;

@@ -5,9 +5,8 @@ import com.bolsadeideas.grcp.greet.GreetingResponse;
 import com.bolsadeideas.grcp.greet.GreetingServiceGrpc;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.StreamObserver;
-import org.bolsadeideas.grcp.greet.Log;
+import org.bolsadeideas.grcp.Log;
 
-import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
 public class DoGreetManyTimesAsync implements IDoGreetManyTimes {
